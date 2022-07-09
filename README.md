@@ -47,7 +47,10 @@ This message shows that your installation appears to be working correctly.
 ......
 ```
 
-你可能会发现 `Unable to find image 'hello-world:latest' locally` 之后就卡住不动，不妨直接把这句话放在网上搜索，发现是墙的问题，因此[换用腾讯源](https://cloud.tencent.com/document/product/1207/45596)：
+一般情况下，Docker 拉取镜像的速度非常慢（如上面的命令可能卡在 `Unable to find image 'hello-world:latest' locally`），我们需要更换镜像源以加速访问。
+
+国内可访问的公共镜像源的可用情况可以在 [docker-registry-cn-mirror-test](https://github.com/docker-practice/docker-registry-cn-mirror-test)
+的 Actions 下查看（各云服务平台有供内部使用的镜像源，一般会更加稳定，可以查询平台文档）。这里我们以 `https://docker.mirrors.ustc.edu.cn` 为例：
 
 Linux：编辑 `/etc/docker/daemon.json`
 
@@ -68,6 +71,8 @@ sudo systemctl restart docker
 ```
 
 ## 课程内容
+
+以下是 Docker 课程的几大部分，请点击链接前往各自的文档。
 
 - [Docker 介绍](#docker-介绍)
 - [Docker 基本命令及 Dockerfile 基础](./docker)
