@@ -47,25 +47,25 @@ This message shows that your installation appears to be working correctly.
 ......
 ```
 
-> 你可能会发现 `Unable to find image 'hello-world:latest' locally` 之后就卡住不动，不妨直接把这句话放在网上搜索，发现是墙的问题，因此[换用腾讯源](https://cloud.tencent.com/document/product/1207/45596)：
-> 
-> Linux：编辑 `/etc/docker/daemon.json`
-> 
-> macOS 或 Windows：打开 Docker Desktop 的设置 - Docker Engine
-> 
-> ```
-> {
->   "registry-mirrors": [
->     "https://mirror.ccs.tencentyun.com"
->   ]
-> } 
-> ```
-> 
-> Linux 系统下，在更改后，输入：
-> 
-> ```
-> sudo systemctl restart docker
-> ```
+你可能会发现 `Unable to find image 'hello-world:latest' locally` 之后就卡住不动，不妨直接把这句话放在网上搜索，发现是墙的问题，因此[换用腾讯源](https://cloud.tencent.com/document/product/1207/45596)：
+
+Linux：编辑 `/etc/docker/daemon.json`
+
+macOS 或 Windows：打开 Docker Desktop 的设置 - Docker Engine
+
+```
+{
+  "registry-mirrors": [
+    "https://mirror.ccs.tencentyun.com"
+  ]
+} 
+```
+
+Linux 系统下，在更改后，输入：
+
+```
+sudo systemctl restart docker
+```
 
 ## 课程内容
 

@@ -24,7 +24,7 @@ This message shows that your installation appears to be working correctly.
 
 建议你自己新建一个文件夹并动手写 Dockerfile。此部分内容源码见 [./echo](./echo) 目录，供参考。
 
-首先，新建一个名为 `Dockerfile` 的文本文件，用来描述如何构建你的 docker 容器。
+首先，新建一个名为 `Dockerfile` 的文本文件，用来描述如何构建你的 docker 镜像。
 
 在 Dockerfile 中，我们首先需要指定使用的基础镜像。这里，我们使用 `ubuntu`，这个镜像包含了 `echo`，可以用来进行输出。
 
@@ -88,8 +88,8 @@ CMD ["./hello-world"]
 与之前例子相比，有几个不同点：
 
 - 因为需要使用 `gcc`，因此使用官方的 `gcc` 镜像。
-- 因为编译在 `gcc` 容器内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到容器内部。使用 `COPY /local/path /container/path` 进行拷贝。
-- 在容器中执行命令，使用 `RUN`。注意，`RUN` 在容器**构建**时运行，而 `CMD` 在容器**启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
+- 因为编译在 `gcc` 镜像内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到镜像内部。使用 `COPY /local/path /container/path` 进行拷贝。
+- 在镜像中执行命令，使用 `RUN`。注意，`RUN` 在**镜像构建**时运行，而 `CMD` 在**容器启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
 
 与之前类似，构建镜像并运行容器：
 
@@ -98,11 +98,11 @@ docker build . --tag hello:basic
 docker run --rm hello:basic
 ```
 
-## 缩小容器体积
+## 缩小镜像体积
 
 此部分源码见 [./build-slim](./build-slim) 目录。
 
-在完成上一部分之后，执行如下命令，查看你所构建的容器的体积：
+在完成上一部分之后，执行如下命令，查看你所构建的镜像的体积：
 
 ```
 > docker image ls hello:basic
@@ -153,7 +153,7 @@ CMD ["./hello-world"]
 
 **第二个阶段**：使用 `scratch` 镜像，占用空间接近于 0。
 
-我们使用 `COPY` 语句从第一个阶段 `build` 中将编译得到的二进制文件 `hello-world` 复制到这个容器中。与之前不同，我们使用 `--from=build` 以从 `build` 阶段的容器，而非宿主机上拷贝文件。你也可以使用 `--from=0` 表示从第一个阶段拷贝，从而省略 `AS build`，当然这不如上面的表示直观。
+我们使用 `COPY` 语句从第一个阶段 `build` 中将编译得到的二进制文件 `hello-world` 复制到这个镜像中。与之前不同，我们使用 `--from=build` 以从 `build` 阶段的镜像，而非宿主机上拷贝文件。你也可以使用 `--from=0` 表示从第一个阶段拷贝，从而省略 `AS build`，当然这不如上面的表示直观。
 
 同样地，构建镜像并运行容器：
 
