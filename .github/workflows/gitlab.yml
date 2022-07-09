@@ -14,5 +14,5 @@ jobs:
         with:
           fetch-depth: 0
       - run: |
-          git remote add gitlab 'https://liang2kl:${{ secrets.GITLAB_TOKEN }}@gitlab.com/2022-summer-training-docker-tutorial'
+          git remote add gitlab 'https://liang2kl:${{ secrets.GITLAB_TOKEN }}@gitlab.com/liang2kl/2022-summer-training-docker-tutorial'
           git push gitlab --force
