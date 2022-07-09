@@ -59,7 +59,7 @@ macOS 或 Windows：打开 Docker Desktop 的设置 - Docker Engine
 ```
 {
   "registry-mirrors": [
-    "https://mirror.ccs.tencentyun.com"
+    "https://docker.mirrors.ustc.edu.cn"
   ]
 } 
 ```
