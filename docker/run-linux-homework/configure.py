@@ -2,7 +2,7 @@ import os
 import sys
 
 BASE_PORT = 20000
-IMAGE = "cc7w/linux-training:v8"
+IMAGE = "cc7w/linux-training:v10"
 NUM_CONTAINERS = 3
 
 if __name__ == "__main__":

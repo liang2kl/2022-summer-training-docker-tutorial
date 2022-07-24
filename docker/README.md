@@ -47,10 +47,12 @@ docker run --rm hello-world
 我们尝试使用 Docker 运行 Ubuntu，并启动一个供我们交互的 bash 终端：
 
 ```
-docker run -t -i ubuntu:22.04 bash
+docker run -t -i ubuntu:22.04  bash
+                 |__________| |____|
+                     镜像       CMD
 ```
 
-`-i` 即 `--interactive`，让容器的标准输入保持打开；`-t` 即 `--tty`，让 Docker 分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上。
+`-i` 即 `--interactive`，让容器的标准输入保持打开；`-t` 即 `--tty`，让 Docker 分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上。在镜像名后的命令行参数 `bash` 覆盖了镜像所定义的入口，使得容器运行时执行 `bash`。
 
 ### 运行暑培 Linux 作业所用镜像
 
@@ -59,12 +61,12 @@ docker run -t -i ubuntu:22.04 bash
 通过如下命令使用暑培所用镜像运行一个容器：
 
 ```
-docker run -p 127.0.0.1:20000:22 -d cc7w/linux-training:v8
+docker run -p 127.0.0.1:20000:22 -d cc7w/linux-training:v10
 ```
 
 `-p` 即 `--publish`，将容器内部的端口发布到宿主机上。`-p 127.0.0.1:20000:22` 将容器内部的 22 端口发布到宿主机的 `127.0.0.1:20000`；换句话说，我们可以通过宿主机的 `127.0.0.1:20000` 访问容器的 22 端口。
 
-`-d` 即 `--detach`，使得容器启动后执行的命令在后台运行。你可以通过 `docker image inspect cc7w/linux-training:v8` 看看容器启动后执行了什么命令。
+`-d` 即 `--detach`，使得容器启动后执行的命令在后台运行。你可以通过 `docker image inspect cc7w/linux-training:v10` 看看容器启动后执行了什么命令。
 
 现在，我们就可以通过宿主机 ssh 到容器内部了：
 
