@@ -52,7 +52,7 @@ docker run -t -i ubuntu:22.04  bash
                      镜像       CMD
 ```
 
-`-i` 即 `--interactive`，让容器的标准输入保持打开；`-t` 即 `--tty`，让 Docker 分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上。在镜像名后的命令行参数 `bash` 覆盖了镜像所定义的入口，使得容器运行时执行 `bash`。
+`-i` 即 `--interactive`，让容器的标准输入保持打开；`-t` 即 `--tty`，让 Docker 分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上。在镜像名后的命令行参数 `bash` 覆盖了镜像所定义的默认命令，使得容器运行时执行 `bash`。
 
 ### 运行暑培 Linux 作业所用镜像
 

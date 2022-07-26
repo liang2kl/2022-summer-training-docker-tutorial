@@ -2,6 +2,13 @@
 
 本部分目标：运行 docker 容器时在屏幕打印 `Hello, world`（或类似内容）。
 
+以下部分镜像使用 GitHub Actions 自动构建并上传至 Docker Hub，可直接使用：
+
+- 使用 echo：`liang2kl/2022-sast-hello:echo`
+- 使用 gcc 编译 C 程序：`liang2kl/2022-sast-hello:basic`
+- 缩小镜像体积：`liang2kl/2022-sast-hello:slim`
+- 进阶版 echo：`liang2kl/2022-sast-echo`
+
 ## 使用官方 hello-world 镜像
 
 Docker 官方提供了一个 `hello-world` 镜像，通常用于检测 docker 环境是否正常。
@@ -34,7 +41,7 @@ This message shows that your installation appears to be working correctly.
 FROM ubuntu:latest
 ```
 
-最后，我们使用 `CMD` 来指定容器运行（即 `docker run`）时在**容器内部**执行的命令，命令行参数用逗号隔开：
+最后，我们使用 `ENTRYPOINT` 来指定容器运行（即 `docker run`）时在**容器内部**执行的命令，命令行参数用逗号隔开：
 
 ```dockerfile
 CMD ["echo", "Hello, world!"]
@@ -64,7 +71,7 @@ docker run --rm hello:echo
 #include "stdio.h"
 
 int main() {
-    printf("Hello, World!\n");
+    printf("Hello, world!\n");
     return 0;
 }
 ```
@@ -89,7 +96,7 @@ CMD ["./hello-world"]
 
 - 因为需要使用 `gcc`，因此使用官方的 `gcc` 镜像。
 - 因为编译在 `gcc` 镜像内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到镜像内部。使用 `COPY /local/path /container/path` 进行拷贝。
-- 在镜像中执行命令，使用 `RUN`。注意，`RUN` 在**镜像构建**时运行，而 `CMD` 在**容器启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
+- 在镜像中执行命令，使用 `RUN`。注意，`RUN` 在**镜像构建**时运行，而 `ENTRYPOINT` 在**容器启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
 
 与之前类似，构建镜像并运行容器：
 
@@ -172,6 +179,73 @@ hello        slim      5ea5ccb25a54   3 hours ago   723kB
 
 镜像只有 723kB，基本上就是程序本身的大小。
 
-## 设置容器的环境变量
+## 进阶版 echo
 
-使用 `ENV` 语句可以设置容器的环境变量，在这里不再赘述，可以参考 [./build-env](./build-env) 目录下的内容。
+此部分源码见 [./echo-advanced](./echo-advanced) 目录。
+
+我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。
+
+[之前提到](../README.md#Ubuntu)，在 `docker run` 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：
+
+```
+docker run --rm ubuntu:22.04 echo Hello, world!
+                |__________| |________________|
+                    镜像名           CMD 
+```
+
+这个“默认命令”，就是我们上面所使用的 `CMD` 所定义的命令。你可以尝试覆盖[使用 echo](#使用-echo) 一节中构建的镜像所定义的命令：
+
+```
+docker run --rm hello:echo echo Hello, SAST!
+```
+
+此时，输出为 `Hello, SAST!`，而非 `Hello, world!`。
+
+这其实违背了我们的初衷：我们上面写的 hello world 镜像只用于输出 `Hello, world!`，而不应当用于其他用途。为此，我们应当将 `CMD` 换成 `ENTRYPOINT`：
+
+```dockerfile
+FROM ubuntu:latest
+ENTRYPOINT ["echo", "Hello, world!"]
+```
+
+`ENTRYPOINT` 与 `CMD` 的区别在于，`CMD` 可以通过简单地在 `docker run` 命令后追加参数来覆盖，而 `ENTRYPOINT` 不能[^1]。
+
+另外，`ENTRYPOINT` 与 `CMD` 共同构成了容器运行时执行的命令：
+
+```
+ENTRYPOINT CMD
+```
+
+因此，我们可以这样来写一个默认输出 `Hello, world!`，但又可以输出任意字符串，且不需要像上面那样手动输入 `echo` 的镜像：
+
+```dockerfile
+FROM ubuntu:latest
+
+# Set entry point as "echo".
+ENTRYPOINT ["echo"]
+
+# Provide the default arguments to the command ("echo").
+CMD ["Hello, world!"]
+```
+
+构建、运行：
+
+```bash
+docker build . --tag echo
+docker run --rm echo              # 输出为 Hello, world!
+docker run --rm echo Hello, SAST! # 输出为 Hello, SAST!
+```
+
+怎么理解 `ENTRYPOINT` 和 `CMD` 的区别？不使用 `ENTRYPOINT` 的镜像像是一个运行环境，`CMD` 是在此环境中执行的程序（如 `ubuntu` 使用 `bash` 作为默认的 `CMD`），而使用 `ENTRYPOINT` 的镜像更像是一个程序，`CMD` 是这个程序的命令行参数（如上面的例子使用 `Hello, world` 作为默认的输出，但可以随时更改）。
+
+最后，请你再仔细品味这几个命令的联系与区别：
+
+```bash
+docker run --rm ubuntu:22.04 echo Hello, SAST! # Ubuntu 镜像
+docker run --rm hello:echo echo Hello, SAST! # 我们写的 echo - hello world 镜像，使用 CMD
+docker run --rm echo Hello, SAST! # 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT
+
+echo Hello, SAST # 直接使用本地环境的 echo 程序
+```
+
+[^1]: `ENTRYPOINT` 可以通过 `docker run` 的 `--entrypoint` 选项覆盖，但一般不会使用。
