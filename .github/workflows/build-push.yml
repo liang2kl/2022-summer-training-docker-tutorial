@@ -54,7 +54,7 @@ jobs:
       - name: "Build and push #2"
         uses: docker/build-push-action@v3
         if: |
-          contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-basic/Dockerfile') || \
+          contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-basic/Dockerfile') ||
           contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-basic/main.c')
         with:
           context: ./docker/hello-world/build-basic
@@ -65,7 +65,7 @@ jobs:
       - name: "Build and push #3"
         uses: docker/build-push-action@v3
         if: |
-          contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-slim/Dockerfile') || \
+          contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-slim/Dockerfile') ||
           contains(steps.changed-files.outputs.all_changed_files, 'docker/hello-world/build-slim/main.c')
         with:
           context: ./docker/hello-world/build-slim
