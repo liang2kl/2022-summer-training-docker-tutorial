@@ -185,7 +185,7 @@ hello        slim      5ea5ccb25a54   3 hours ago   723kB
 
 我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。
 
-[之前提到](../README.md#Ubuntu)，在 `docker run` 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：
+[之前提到](../README.md#ubuntu)，在 `docker run` 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：
 
 ```
 docker run --rm ubuntu:22.04 echo Hello, world!
