@@ -1,0 +1,682 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liang2kl.github.io/2022-summer-training-docker-tutorial/dockerfile-1/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.3.9">
+    
+    
+      
+        <title>Dockerfile 的编写（上） - 2022 SAST Docker Tutorial</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.1d29e8d0.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#echo" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="2022 SAST Docker Tutorial" class="md-header__button md-logo" aria-label="2022 SAST Docker Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            2022 SAST Docker Tutorial
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dockerfile 的编写（上）
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    liang2kl/2022-summer-training-docker-tutorial
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="2022 SAST Docker Tutorial" class="md-nav__button md-logo" aria-label="2022 SAST Docker Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    2022 SAST Docker Tutorial
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    liang2kl/2022-summer-training-docker-tutorial
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        主页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        Docker 介绍
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/" class="md-nav__link">
+        Docker 基本命令
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Dockerfile 的编写（上）
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Dockerfile 的编写（上）
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    使用 echo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcc-c" class="md-nav__link">
+    使用 gcc 编译 C 程序
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    缩小镜像体积
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#echo_1" class="md-nav__link">
+    进阶版 echo
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerfile-2/" class="md-nav__link">
+        Dockerfile 的编写（下）
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../behind-the-scene/" class="md-nav__link">
+        Docker 的原理
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-compose/" class="md-nav__link">
+        docker-compose 介绍及使用
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    使用 echo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcc-c" class="md-nav__link">
+    使用 gcc 编译 C 程序
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    缩小镜像体积
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#echo_1" class="md-nav__link">
+    进阶版 echo
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/edit/master/docs/dockerfile-1.md" title="编辑此页" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+  <h1>Dockerfile 的编写（上）</h1>
+
+<p>之前，我们已经运行了官方的 hello-world 镜像：</p>
+<div class="highlight"><pre><span></span><code>docker run --rm hello-world:latest
+</code></pre></div>
+<p>现在，我们尝试自己写一个在屏幕打印 <code>Hello, world</code>（或类似内容）的 Docker 镜像。</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>本节镜像已使用 GitHub Actions 自动构建并上传至 Docker Hub，可直接使用。不过本节的目的在于学会如何自己写 Dockerfile，这些只是用来进行尝试的例子。</p>
+<ul>
+<li>使用 echo：<code>liang2kl/2022-sast-hello:echo</code></li>
+<li>使用 gcc 编译 C 程序：<code>liang2kl/2022-sast-hello:basic</code></li>
+<li>缩小镜像体积：<code>liang2kl/2022-sast-hello:slim</code></li>
+<li>进阶版 echo：<code>liang2kl/2022-sast-echo</code></li>
+</ul>
+</div>
+<h2 id="echo">使用 echo<a class="headerlink" href="#echo" title="Permanent link">&para;</a></h2>
+<p>建议你自己新建一个文件夹并动手写 Dockerfile。此部分内容源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/echo">/docker/hello-world/echo</a> 目录，供参考。</p>
+<p>首先，新建一个名为 <code>Dockerfile</code> 的文本文件，这个文件用来描述如何构建你的 docker 镜像。</p>
+<p>在 Dockerfile 中，我们首先需要指定使用的基础镜像。这里，我们使用 <code>ubuntu</code>，这个镜像包含了 <code>echo</code>，可以用来进行输出。</p>
+<p>用 <code>FROM</code> 指定基础镜像：</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span>
+</code></pre></div>
+<p>最后，我们使用 <code>ENTRYPOINT</code> 来指定容器运行（即 <code>docker run</code>）时在<strong>容器内部</strong>执行的命令，命令行参数用逗号隔开：</p>
+<div class="highlight"><pre><span></span><code><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>这样，我们的 Dockerfile 就编写好了。接下来，在同一目录下使用 <code>docker build</code> 命令来构建镜像，并将镜像的标签设为 <code>hello:echo</code>：</p>
+<div class="highlight"><pre><span></span><code>docker build . --tag hello:echo
+</code></pre></div>
+<p>然后，使用此镜像运行容器：</p>
+<div class="highlight"><pre><span></span><code>docker run --rm hello:echo
+</code></pre></div>
+<p>你应当能看到 <code>Hello, world!</code> 的输出。</p>
+<h2 id="gcc-c">使用 gcc 编译 C 程序<a class="headerlink" href="#gcc-c" title="Permanent link">&para;</a></h2>
+<p>我们使用 <code>gcc</code> 来编译一个 hello world 程序，源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-basic">/docker/build-basic</a> 目录。</p>
+<p>本部分所用的 C 程序 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-basic/main.c">main.c</a> 如下：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span><span class="cp"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello, world!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>在 <code>main.c</code> 同一目录下，创建 Dockerfile 如下：</p>
+<div class="highlight"><pre><span></span><code><span class="c"># Use &quot;gcc&quot; image.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">gcc:latest</span>
+
+<span class="c"># Copy main.c from local file system to the container.</span>
+<span class="k">COPY</span><span class="w"> </span>main.c main.c
+
+<span class="c"># Compile hello-world program using gcc.</span>
+<span class="k">RUN</span><span class="w"> </span>gcc -o hello-world main.c
+
+<span class="c"># Run the program.</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./hello-world&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>与之前例子相比，有几个不同点：</p>
+<ul>
+<li>因为需要使用 <code>gcc</code>，因此使用官方的 <code>gcc</code> 镜像。</li>
+<li>因为编译在 <code>gcc</code> 镜像内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到镜像内部。使用 <code>COPY /local/path /container/path</code> 进行拷贝。</li>
+<li>在镜像中执行命令，使用 <code>RUN</code>。注意，<code>RUN</code> 在<strong>镜像构建</strong>时运行，而 <code>ENTRYPOINT</code> 在<strong>容器启动</strong>时运行。在这里，我们使用 <code>gcc</code> 编译程序，得到可执行文件 <code>hello-world</code>。</li>
+</ul>
+<p>与之前类似，构建镜像并运行容器：</p>
+<div class="highlight"><pre><span></span><code>docker build . --tag hello:basic
+docker run --rm hello:basic
+</code></pre></div>
+<h2 id="_1">缩小镜像体积<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>此部分源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-slim">/docker/build-slim</a> 目录。</p>
+<p>在完成上一部分之后，执行如下命令，查看你所构建的镜像的体积：</p>
+<div class="highlight"><pre><span></span><code>&gt; docker image ls hello:basic
+REPOSITORY   TAG       IMAGE ID       CREATED             SIZE
+hello        basic     3304cef3f3ee   About an hour ago   1.16GB
+</code></pre></div>
+<p>可以看到，<code>hello</code> 镜像的体积非常庞大，超过了 1GB。这是因为，我们使用了 <code>gcc</code> 镜像，而 <code>gcc</code> 镜像本身体积就达到了 1.16GB。</p>
+<p>然而，<code>gcc</code> 只是用来进行编译的，在编译完成之后就不需要用到 <code>gcc</code> 了。为此，我们使用 Dockerfile 的 <a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build</a> 功能，以将用于编译与运行的镜像分离。</p>
+<p>Dockerfile 如下：</p>
+<div class="highlight"><pre><span></span><code><span class="c"># === STAGE 1 ===</span>
+<span class="c"># Use &quot;gcc&quot; image. Name this stage as &quot;build&quot;.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">gcc:latest</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/build</span>
+
+<span class="c"># Copy main.c from local file system to the container.</span>
+<span class="k">COPY</span><span class="w"> </span>main.c main.c
+
+<span class="c"># Compile hello-world program using gcc.</span>
+<span class="c"># Statically link libc in order to run in the &quot;scratch&quot; image.</span>
+<span class="k">RUN</span><span class="w"> </span>gcc -static -o hello-world main.c
+
+<span class="c"># === STAGE 2 ===</span>
+<span class="c"># Use the minimum &quot;scratch&quot; image.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">scratch</span>
+
+<span class="c"># Copy executable from the previous stage (in /build) to the container (.).</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>build /build/hello-world ./hello-world
+<span class="c"># This also works:</span>
+<span class="c"># COPY --from=0 /build/hello-world ./hello-world</span>
+
+<span class="c"># Run the program.</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./hello-world&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>每一个 <code>FROM</code> 语句直到下一个 <code>FROM</code> 语句的内容均为一个“阶段”（stage），每个阶段之间相互独立。在这里，我们有两个阶段：</p>
+<p><strong>第一个阶段</strong>：和上一个例子类似，使用 <code>gcc</code> 容器编译二进制文件。不同的是：</p>
+<ul>
+<li>在 <code>FROM</code> 语句中增加了 <code>AS build</code>，以将此阶段命名为 <code>build</code>。这是为了方便在后续阶段中表示此阶段。</li>
+<li>将工作目录设置为 <code>/build</code>，方便在后续阶段中进行拷贝。这一步可以省略（默认的工作目录为 <code>/</code>）。</li>
+<li>在编译时，加上了 <code>-static</code>，以将动态库（在这里是 <code>libc</code>）静态地链接到可执行文件。因为我们后续使用（几乎什么都没有的）<code>scratch</code> 镜像来运行程序，而 <code>scratch</code> 中没有 <code>libc</code>，因此需要静态链接。</li>
+</ul>
+<p><strong>第二个阶段</strong>：使用 <code>scratch</code> 镜像，占用空间接近于 0。</p>
+<p>我们使用 <code>COPY</code> 语句从第一个阶段 <code>build</code> 中将编译得到的二进制文件 <code>hello-world</code> 复制到这个镜像中。与之前不同，我们使用 <code>--from=build</code> 以从 <code>build</code> 阶段的镜像，而非宿主机上拷贝文件。你也可以使用 <code>--from=0</code> 表示从第一个阶段拷贝，从而省略 <code>AS build</code>，当然这不如上面的表示直观。</p>
+<p>同样地，构建镜像并运行容器：</p>
+<div class="highlight"><pre><span></span><code>docker build . --tag hello:slim
+docker run --rm hello:slim
+</code></pre></div>
+<p>查看此镜像的大小：</p>
+<div class="highlight"><pre><span></span><code>&gt; docker image ls hello:slim
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+hello        slim      5ea5ccb25a54   3 hours ago   723kB
+</code></pre></div>
+<p>镜像只有 723kB，基本上就是程序本身的大小。</p>
+<h2 id="echo_1">进阶版 echo<a class="headerlink" href="#echo_1" title="Permanent link">&para;</a></h2>
+<p>此部分源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/echo-advanced">/docker/echo-advanced</a> 目录。</p>
+<p>我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。</p>
+<p><a href="../commands/#ubuntu">之前提到</a>，在 <code>docker run</code> 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：</p>
+<div class="highlight"><pre><span></span><code>docker run --rm ubuntu:22.04 echo &quot;Hello, world!&quot;
+                |__________| |__________________|
+                    镜像名             CMD
+</code></pre></div>
+<p>这个“默认命令”，就是我们上面所使用的 <code>CMD</code> 所定义的命令。你可以尝试覆盖“使用 echo”一节中构建的镜像所定义的命令：</p>
+<div class="highlight"><pre><span></span><code>docker run --rm hello:echo echo &quot;Hello, SAST!&quot;
+</code></pre></div>
+<p>此时，输出为 <code>Hello, SAST!</code>，而非 <code>Hello, world!</code>。</p>
+<p>这其实违背了我们的初衷：我们上面写的 hello world 镜像只用于输出 <code>Hello, world!</code>，而不应当用于其他用途。为此，我们应当将 <code>CMD</code> 换成 <code>ENTRYPOINT</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span>
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><code>ENTRYPOINT</code> 与 <code>CMD</code> 的区别在于，<code>CMD</code> 可以通过简单地在 <code>docker run</code> 命令后追加参数来覆盖，而 <code>ENTRYPOINT</code> 不能<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>。</p>
+<p>另外，<code>ENTRYPOINT</code> 与 <code>CMD</code> 共同构成了容器运行时执行的命令：</p>
+<div class="highlight"><pre><span></span><code>ENTRYPOINT CMD
+</code></pre></div>
+<p>因此，我们可以这样来写一个默认输出 <code>Hello, world!</code>，但又可以输出任意字符串，且不需要像上面那样手动输入 <code>echo</code> 的镜像：</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span>
+
+<span class="c"># Set entry point as &quot;echo&quot;.</span>
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">]</span>
+
+<span class="c"># Provide the default arguments to the command (&quot;echo&quot;).</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>构建、运行：</p>
+<div class="highlight"><pre><span></span><code>docker build . --tag <span class="nb">echo</span>
+
+docker run --rm <span class="nb">echo</span>                <span class="c1"># 输出为 Hello, world!</span>
+docker run --rm <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 输出为 Hello, SAST!</span>
+</code></pre></div>
+<p>怎么理解 <code>ENTRYPOINT</code> 和 <code>CMD</code> 的区别？不使用 <code>ENTRYPOINT</code> 的镜像像是一个运行环境，<code>CMD</code> 是在此环境中执行的程序（如 <code>ubuntu</code> 使用 <code>bash</code> 作为默认的 <code>CMD</code>），而使用 <code>ENTRYPOINT</code> 的镜像更像是一个程序，<code>CMD</code> 是这个程序的命令行参数（如上面的例子使用 <code>Hello, world</code> 作为默认的输出，但可以随时更改）。</p>
+<p>最后，请你再仔细品味这几个命令的联系与区别：</p>
+<div class="highlight"><pre><span></span><code>docker run --rm ubuntu:22.04 <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># Ubuntu 镜像</span>
+docker run --rm hello:echo <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的 echo - hello world 镜像，使用 CMD</span>
+docker run --rm <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 直接使用本地环境的 echo 程序</span>
+</code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><code>ENTRYPOINT</code> 可以通过 <code>docker run</code> 的 <code>--entrypoint</code> 选项覆盖，但一般不会使用。&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../commands/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Docker 基本命令" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              Docker 基本命令
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../dockerfile-2/" class="md-footer__link md-footer__link--next" aria-label="下一页: Dockerfile 的编写（下）" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              Dockerfile 的编写（下）
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2021 Liang Yesheng
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      
+    
+  </body>
+</html>
