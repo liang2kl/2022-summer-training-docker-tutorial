@@ -1,37 +1,28 @@
-# 用 Docker 运行 Hello World
+---
+title: "Dockerfile 的编写（上）"
+---
 
-本部分目标：运行 docker 容器时在屏幕打印 `Hello, world`（或类似内容）。
+之前，我们已经运行了官方的 hello-world 镜像：
 
-以下部分镜像使用 GitHub Actions 自动构建并上传至 Docker Hub，可直接使用：
-
-- 使用 echo：`liang2kl/2022-sast-hello:echo`
-- 使用 gcc 编译 C 程序：`liang2kl/2022-sast-hello:basic`
-- 缩小镜像体积：`liang2kl/2022-sast-hello:slim`
-- 进阶版 echo：`liang2kl/2022-sast-echo`
-
-## 使用官方 hello-world 镜像
-
-Docker 官方提供了一个 `hello-world` 镜像，通常用于检测 docker 环境是否正常。
-
-使用命令行输入：
-
-```
+```bash
 docker run --rm hello-world:latest
 ```
 
-即可看到输出：
+现在，我们尝试自己写一个在屏幕打印 `Hello, world`（或类似内容）的 Docker 镜像。
 
-```
-Hello from Docker!
-This message shows that your installation appears to be working correctly.
-...
-```
+!!! info
+    本节镜像已使用 GitHub Actions 自动构建并上传至 Docker Hub，可直接使用。不过本节的目的在于学会如何自己写 Dockerfile，这些只是用来进行尝试的例子。
+
+    - 使用 echo：`liang2kl/2022-sast-hello:echo`
+    - 使用 gcc 编译 C 程序：`liang2kl/2022-sast-hello:basic`
+    - 缩小镜像体积：`liang2kl/2022-sast-hello:slim`
+    - 进阶版 echo：`liang2kl/2022-sast-echo`
 
 ## 使用 echo
 
-建议你自己新建一个文件夹并动手写 Dockerfile。此部分内容源码见 [./echo](./echo) 目录，供参考。
+建议你自己新建一个文件夹并动手写 Dockerfile。此部分内容源码见 [/docker/hello-world/echo]({{ code_base }}/docker/hello-world/echo) 目录，供参考。
 
-首先，新建一个名为 `Dockerfile` 的文本文件，用来描述如何构建你的 docker 镜像。
+首先，新建一个名为 `Dockerfile` 的文本文件，这个文件用来描述如何构建你的 docker 镜像。
 
 在 Dockerfile 中，我们首先需要指定使用的基础镜像。这里，我们使用 `ubuntu`，这个镜像包含了 `echo`，可以用来进行输出。
 
@@ -47,7 +38,7 @@ FROM ubuntu:latest
 CMD ["echo", "Hello, world!"]
 ```
 
-这样，我们的 Dockerfile 就编写好了。接下来，我们使用 `docker build` 命令来构建镜像，并将镜像的标签设为 `hello:echo`：
+这样，我们的 Dockerfile 就编写好了。接下来，在同一目录下使用 `docker build` 命令来构建镜像，并将镜像的标签设为 `hello:echo`：
 
 ```
 docker build . --tag hello:echo
@@ -63,9 +54,9 @@ docker run --rm hello:echo
 
 ## 使用 gcc 编译 C 程序
 
-我们使用 `gcc` 来编译一个 hello world 程序，源码见 [./build-basic](./build-basic) 目录。
+我们使用 `gcc` 来编译一个 hello world 程序，源码见 [/docker/build-basic]({{ code_base }}/docker/hello-world/build-basic) 目录。
 
-本部分所用的 C 程序 [`main.c`](build-basic/main.c) 如下：
+本部分所用的 C 程序 [main.c]({{ code_base }}/docker/hello-world/build-basic/main.c) 如下：
 
 ```c
 #include "stdio.h"
@@ -107,7 +98,7 @@ docker run --rm hello:basic
 
 ## 缩小镜像体积
 
-此部分源码见 [./build-slim](./build-slim) 目录。
+此部分源码见 [/docker/build-slim]({{ code_base }}/docker/hello-world/build-slim) 目录。
 
 在完成上一部分之后，执行如下命令，查看你所构建的镜像的体积：
 
@@ -181,22 +172,22 @@ hello        slim      5ea5ccb25a54   3 hours ago   723kB
 
 ## 进阶版 echo
 
-此部分源码见 [./echo-advanced](./echo-advanced) 目录。
+此部分源码见 [/docker/echo-advanced]({{ code_base }}/docker/hello-world/echo-advanced) 目录。
 
 我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。
 
-[之前提到](../README.md#ubuntu)，在 `docker run` 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：
+[之前提到](commands.md#ubuntu)，在 `docker run` 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：
 
 ```
-docker run --rm ubuntu:22.04 echo Hello, world!
-                |__________| |________________|
-                    镜像名           CMD 
+docker run --rm ubuntu:22.04 echo "Hello, world!"
+                |__________| |__________________|
+                    镜像名             CMD
 ```
 
-这个“默认命令”，就是我们上面所使用的 `CMD` 所定义的命令。你可以尝试覆盖[使用 echo](#使用-echo) 一节中构建的镜像所定义的命令：
+这个“默认命令”，就是我们上面所使用的 `CMD` 所定义的命令。你可以尝试覆盖“使用 echo”一节中构建的镜像所定义的命令：
 
 ```
-docker run --rm hello:echo echo Hello, SAST!
+docker run --rm hello:echo echo "Hello, SAST!"
 ```
 
 此时，输出为 `Hello, SAST!`，而非 `Hello, world!`。
@@ -232,8 +223,9 @@ CMD ["Hello, world!"]
 
 ```bash
 docker build . --tag echo
-docker run --rm echo              # 输出为 Hello, world!
-docker run --rm echo Hello, SAST! # 输出为 Hello, SAST!
+
+docker run --rm echo                # 输出为 Hello, world!
+docker run --rm echo "Hello, SAST!" # 输出为 Hello, SAST!
 ```
 
 怎么理解 `ENTRYPOINT` 和 `CMD` 的区别？不使用 `ENTRYPOINT` 的镜像像是一个运行环境，`CMD` 是在此环境中执行的程序（如 `ubuntu` 使用 `bash` 作为默认的 `CMD`），而使用 `ENTRYPOINT` 的镜像更像是一个程序，`CMD` 是这个程序的命令行参数（如上面的例子使用 `Hello, world` 作为默认的输出，但可以随时更改）。
@@ -241,11 +233,11 @@ docker run --rm echo Hello, SAST! # 输出为 Hello, SAST!
 最后，请你再仔细品味这几个命令的联系与区别：
 
 ```bash
-docker run --rm ubuntu:22.04 echo Hello, SAST! # Ubuntu 镜像
-docker run --rm hello:echo echo Hello, SAST! # 我们写的 echo - hello world 镜像，使用 CMD
-docker run --rm echo Hello, SAST! # 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT
+docker run --rm ubuntu:22.04 echo "Hello, SAST!" # Ubuntu 镜像
+docker run --rm hello:echo echo "Hello, SAST!" # 我们写的 echo - hello world 镜像，使用 CMD
+docker run --rm echo "Hello, SAST!" # 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT
 
-echo Hello, SAST # 直接使用本地环境的 echo 程序
+echo "Hello, SAST!" # 直接使用本地环境的 echo 程序
 ```
 
 [^1]: `ENTRYPOINT` 可以通过 `docker run` 的 `--entrypoint` 选项覆盖，但一般不会使用。

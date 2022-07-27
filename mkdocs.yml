@@ -1,0 +1,34 @@
+site_name: 2022 SAST Docker Tutorial
+site_url: https://liang2kl.github.io/2022-summer-training-docker-tutorial/
+repo_url: https://github.com/liang2kl/2022-summer-training-docker-tutorial/
+repo_name: liang2kl/2022-summer-training-docker-tutorial
+
+theme:
+  name: 'material'
+  language: zh
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - footnotes
+  - toc:
+      permalink: true
+
+nav:
+  - index.md
+  - introduction.md
+  - commands.md
+  - dockerfile-1.md
+  - dockerfile-2.md
+  - behind-the-scene.md
+  - docker-compose.md
+
+plugins:
+  - search
+  - macros
+
+extra:
+  code_base: https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main
+
+copyright: Copyright &copy; 2021 Liang Yesheng
