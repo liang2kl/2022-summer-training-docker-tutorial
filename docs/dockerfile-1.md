@@ -52,9 +52,12 @@ docker run --rm hello:echo
 
 你应当能看到 `Hello, world!` 的输出。
 
+!!! info "关于工作目录"
+    上面 `docker build` 中的 `.` 的意思是使用当前工作目录下的 Dockerfile 作为输入进行构建，可以替换为任意包含 Dockerfile 的路径。如无特殊说明，本页中所有命令的工作目录均为 Dockerfile 所在目录，复制粘贴命令时请注意切换目录。
+
 ## 使用 gcc 编译 C 程序
 
-我们使用 `gcc` 来编译一个 hello world 程序，源码见 [/docker/build-basic]({{ code_base }}/docker/hello-world/build-basic) 目录。
+我们使用 `gcc` 来编译一个 hello world 程序，源码见 [/docker/hello-world/build-basic]({{ code_base }}/docker/hello-world/build-basic) 目录。
 
 本部分所用的 C 程序 [main.c]({{ code_base }}/docker/hello-world/build-basic/main.c) 如下：
 
@@ -172,7 +175,7 @@ hello        slim      5ea5ccb25a54   3 hours ago   723kB
 
 ## 进阶版 echo
 
-此部分源码见 [/docker/echo-advanced]({{ code_base }}/docker/hello-world/echo-advanced) 目录。
+此部分源码见 [/docker/hello-world/echo-advanced]({{ code_base }}/docker/hello-world/echo-advanced) 目录。
 
 我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。
 
@@ -233,9 +236,8 @@ docker run --rm echo "Hello, SAST!" # 输出为 Hello, SAST!
 最后，请你再仔细品味这几个命令的联系与区别：
 
 ```bash
-docker run --rm ubuntu:22.04 echo "Hello, SAST!" # Ubuntu 镜像
 docker run --rm hello:echo echo "Hello, SAST!" # 我们写的 echo - hello world 镜像，使用 CMD
-docker run --rm echo "Hello, SAST!" # 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT
+docker run --rm echo "Hello, SAST!" # 我们写的改进版 echo 镜像，使用 ENTRYPOINT
 
 echo "Hello, SAST!" # 直接使用本地环境的 echo 程序
 ```
