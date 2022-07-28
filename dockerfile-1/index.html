@@ -463,8 +463,12 @@
 <div class="highlight"><pre><span></span><code>docker run --rm hello:echo
 </code></pre></div>
 <p>你应当能看到 <code>Hello, world!</code> 的输出。</p>
+<div class="admonition info">
+<p class="admonition-title">关于工作目录</p>
+<p>上面 <code>docker build</code> 中的 <code>.</code> 的意思是使用当前工作目录下的 Dockerfile 作为输入进行构建，可以替换为任意包含 Dockerfile 的路径。如无特殊说明，本页中所有命令的工作目录均为 Dockerfile 所在目录，复制粘贴命令时请注意切换目录。</p>
+</div>
 <h2 id="gcc-c">使用 gcc 编译 C 程序<a class="headerlink" href="#gcc-c" title="Permanent link">&para;</a></h2>
-<p>我们使用 <code>gcc</code> 来编译一个 hello world 程序，源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-basic">/docker/build-basic</a> 目录。</p>
+<p>我们使用 <code>gcc</code> 来编译一个 hello world 程序，源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-basic">/docker/hello-world/build-basic</a> 目录。</p>
 <p>本部分所用的 C 程序 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/build-basic/main.c">main.c</a> 如下：</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span><span class="cp"></span>
 
@@ -551,7 +555,7 @@ hello        slim      5ea5ccb25a54   3 hours ago   723kB
 </code></pre></div>
 <p>镜像只有 723kB，基本上就是程序本身的大小。</p>
 <h2 id="echo_1">进阶版 echo<a class="headerlink" href="#echo_1" title="Permanent link">&para;</a></h2>
-<p>此部分源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/echo-advanced">/docker/echo-advanced</a> 目录。</p>
+<p>此部分源码见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/docker/hello-world/echo-advanced">/docker/hello-world/echo-advanced</a> 目录。</p>
 <p>我们之前写的 hello world 镜像都仅支持固定的输出。我们接下来使用 Docker 输出任意的字符串。</p>
 <p><a href="../commands/#ubuntu">之前提到</a>，在 <code>docker run</code> 命令中，镜像名后面的参数的作用为覆盖镜像所定义的默认命令。因此，一种输出任意字符串的方法为：</p>
 <div class="highlight"><pre><span></span><code>docker run --rm ubuntu:22.04 echo &quot;Hello, world!&quot;
@@ -587,9 +591,8 @@ docker run --rm <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!
 </code></pre></div>
 <p>怎么理解 <code>ENTRYPOINT</code> 和 <code>CMD</code> 的区别？不使用 <code>ENTRYPOINT</code> 的镜像像是一个运行环境，<code>CMD</code> 是在此环境中执行的程序（如 <code>ubuntu</code> 使用 <code>bash</code> 作为默认的 <code>CMD</code>），而使用 <code>ENTRYPOINT</code> 的镜像更像是一个程序，<code>CMD</code> 是这个程序的命令行参数（如上面的例子使用 <code>Hello, world</code> 作为默认的输出，但可以随时更改）。</p>
 <p>最后，请你再仔细品味这几个命令的联系与区别：</p>
-<div class="highlight"><pre><span></span><code>docker run --rm ubuntu:22.04 <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># Ubuntu 镜像</span>
-docker run --rm hello:echo <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的 echo - hello world 镜像，使用 CMD</span>
-docker run --rm <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的改进版 echo - hello world 镜像，使用 ENTRYPOINT</span>
+<div class="highlight"><pre><span></span><code>docker run --rm hello:echo <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的 echo - hello world 镜像，使用 CMD</span>
+docker run --rm <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 我们写的改进版 echo 镜像，使用 ENTRYPOINT</span>
 
 <span class="nb">echo</span> <span class="s2">&quot;Hello, SAST!&quot;</span> <span class="c1"># 直接使用本地环境的 echo 程序</span>
 </code></pre></div>
