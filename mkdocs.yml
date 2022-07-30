@@ -9,7 +9,6 @@ theme:
 
 markdown_extensions:
   - admonition
-  - pymdownx.highlight
   - pymdownx.superfences
   - footnotes
   - toc:
@@ -31,4 +30,4 @@ plugins:
 extra:
   code_base: https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main
 
-copyright: Copyright &copy; 2021 Liang Yesheng
+copyright: 清华大学计算机系科协 2022 年暑培
