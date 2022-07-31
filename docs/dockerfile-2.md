@@ -26,7 +26,7 @@ title: "Dockerfile 的编写（下）"
     1. 安装特定版本的 Python（在这里我们使用 3.8）
     2. 安装项目依赖（`requirements.txt`）
     3. 安装 uWSGI
-    4. 创建/编辑配置文件 `LeaderBoard/my.cnf`
+    4. 创建/编辑配置文件 `config/config.json`（原来是 `LeaderBoard/my.cnf`）
 2. 运行程序
     1. 运行 `python3 manage.py makemigrations`
     2. 运行 `python3 manage.py migrate`
@@ -71,7 +71,7 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r re
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
 ```
 
-**创建/编辑配置文件 `LeaderBoard/my.cnf`：**配置文件一般包含敏感信息（如数据库的用户名与密码等），**不能**放入镜像中，因此这一步**不能**在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。
+**创建/编辑配置文件 `config/config.json`：**配置文件一般包含敏感信息（如数据库的用户名与密码等），**不能**放入镜像中，因此这一步**不能**在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。
 
 **运行程序**：运行 Django 程序包含几个步骤，这些步骤都在**容器运行**而不是容器构建时进行，因此应成为 `CMD`。一种较为简便的在启动时执行多条命令的方法为：将它们写到一个 shell 脚本中。在我们的例子中，我们将三个步骤写到 `start.sh` 中：
 
