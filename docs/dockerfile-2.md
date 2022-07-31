@@ -47,7 +47,7 @@ COPY . .
 ```
 
 !!! note "使用 .dockerignore"
-    在向容器内部拷贝时可以通过在 Dockerfile 同一目录下新建 `.dockerignore` 文件排除无关文件，如 git 目录、虚拟环境等，以缩小容器体积。
+    在向容器内部拷贝时可以通过 `.dockerignore` 文件排除无关文件，如 git 目录、虚拟环境等，以缩小容器体积。
 
 **安装项目依赖：**使用 `RUN` 安装依赖：
 
@@ -70,6 +70,9 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
 RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt && \
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
 ```
+
+!!! info "查看镜像各层的信息"
+    可以使用 [dive](https://github.com/wagoodman/dive) 查看镜像各层对应的命令及大小。
 
 **创建/编辑配置文件 `config/config.json`：**配置文件一般包含敏感信息（如数据库的用户名与密码等），**不能**放入镜像中，因此这一步**不能**在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。
 
