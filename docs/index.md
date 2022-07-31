@@ -63,7 +63,7 @@ This message shows that your installation appears to be working correctly.
     一般情况下，Docker 拉取镜像的速度非常慢（如上面的命令可能卡在 `Unable to find image 'hello-world:latest' locally`），我们需要更换镜像源以加速访问。
 
     国内可访问的公共镜像源的可用情况可以在 [docker-registry-cn-mirror-test](https://github.com/docker-practice/docker-registry-cn-mirror-test)
-    的 Actions 下查看[^2]。这里我们以 `https://docker.mirrors.ustc.edu.cn` 为例：
+    的 Actions 下查看。这里我们以 `https://docker.mirrors.ustc.edu.cn` 为例：
 
     Linux：编辑 `/etc/docker/daemon.json`；
 
