@@ -96,7 +96,7 @@ CMD ["/bin/sh", "start.sh"]
 构建镜像：
 
 ```bash
-docker build . --tag leaderboard-backend
+docker build . --tag backend-django
 ```
 
 ## 运行容器
