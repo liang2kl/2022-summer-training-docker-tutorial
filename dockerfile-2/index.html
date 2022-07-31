@@ -61,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#dockerfile" class="md-skip">
+          跳转至
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -267,10 +272,88 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Dockerfile 的编写（下）
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Dockerfile 的编写（下）
       </a>
       
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dockerfile" class="md-nav__link">
+    从部署过程到 Dockerfile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    运行容器
+  </a>
+  
+    <nav class="md-nav" aria-label="运行容器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行数据库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    关于数据库的访问
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    运行后端
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-compose/" class="md-nav__link">
+        Docker Compose 的使用
+      </a>
     </li>
   
 
@@ -298,8 +381,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../docker-compose/" class="md-nav__link">
-        docker-compose 介绍及使用
+      <a href="../reference/" class="md-nav__link">
+        参考资料
       </a>
     </li>
   
@@ -323,6 +406,55 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dockerfile" class="md-nav__link">
+    从部署过程到 Dockerfile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    运行容器
+  </a>
+  
+    <nav class="md-nav" aria-label="运行容器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行数据库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    关于数据库的访问
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    运行后端
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -341,8 +473,177 @@
 
   <h1>Dockerfile 的编写（下）</h1>
 
-<p>接下来，我们完成一个实际的任务：将暑培后端作业打包为 Docker 镜像。</p>
-<p>TODO</p>
+<p>接下来，我们完成一个实际的任务：将暑培后端作业打包为 Docker 镜像。我们将以 Django 作业示例代码为例，Golang 作业仅提供 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/external/golang-backend">Dockerfile 样例</a>。</p>
+<div class="admonition question">
+<p class="admonition-title">为什么选择讲解 Django</p>
+<p>Golang 是编译型语言，我们只需要编译得到可执行文件就可以了（与之前使用 gcc 编译类似）；而 Python 是动态语言，与之前的例子不同，而且 Django 的部署一般需要用到 uWSGI，相对麻烦。</p>
+<p>如果没有学习 Django 也没有关系，重点是掌握<strong>如何根据部署过程写 Dockerfile、运行容器</strong>。</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Django 后端样例</p>
+<p>本课程使用的代码位于 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/external/django-backend">/external/django-backend</a>，基于 <a href="https://github.com/Btlmd/sast2022-django-training/tree/impl">Django 作业官方示例</a>修改而成。具体的修改有：</p>
+<ul>
+<li>将 <code>uwsgi.ini.bak</code> 中的 <code>socket</code> 改为 <code>http</code></li>
+<li>将 <code>uwsgi.ini.bak</code> 更名为 <code>uwsgi.ini</code></li>
+<li>将数据库配置文件 <code>LeaderBoard/my.cnf</code> 用 <code>config/config.json</code> 代替</li>
+</ul>
+<p>为方便与本教程同步，建议使用本教程仓库下的代码而非原始的样例代码。</p>
+</div>
+<h2 id="dockerfile">从部署过程到 Dockerfile<a class="headerlink" href="#dockerfile" title="Permanent link">&para;</a></h2>
+<p>写 Dockerfile 其实就是在容器中进行一遍部署（即配置环境、运行程序）的工作。我们先看 Django 部署的步骤：</p>
+<ol>
+<li>配置环境<ol>
+<li>安装特定版本的 Python（在这里我们使用 3.8）</li>
+<li>安装项目依赖（<code>requirements.txt</code>）</li>
+<li>安装 uWSGI</li>
+<li>创建/编辑配置文件 <code>LeaderBoard/my.cnf</code></li>
+</ol>
+</li>
+<li>运行程序<ol>
+<li>运行 <code>python3 manage.py makemigrations</code></li>
+<li>运行 <code>python3 manage.py migrate</code></li>
+<li>启动 uWSGI</li>
+</ol>
+</li>
+</ol>
+<p>接下来，我们根据这个流程写 Dockerfile。</p>
+<p><strong>安装特定版本的 Python：</strong>通过指定基础镜像，我们获得了特定版本的 Python 环境：</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.8</span>
+</code></pre></div>
+<p>在继续进行之前，我们需要先将所有文件拷贝到容器内部：</p>
+<div class="highlight"><pre><span></span><code><span class="k">COPY</span><span class="w"> </span>. .
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">使用 .dockerignore</p>
+<p>在向容器内部拷贝时可以通过在 Dockerfile 同一目录下新建 <code>.dockerignore</code> 文件排除无关文件，如 git 目录、虚拟环境等，以缩小容器体积。</p>
+</div>
+<p><strong>安装项目依赖：</strong>使用 <code>RUN</code> 安装依赖：</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">关于此命令的一些解释</p>
+<p><code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code> 使用 TUNA 源；<code>--no-cache-dir</code> 禁用缓存，以缩小容器体积。</p>
+</div>
+<p><strong>安装 uWSGI：</strong>同样地，使用 <code>RUN</code>。在这里我们使用 pip 安装：</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
+</code></pre></div>
+<p>在构建镜像的过程中，对于每一条指令，镜像会相应地加上一层。如果每一条 bash 命令都写一条 <code>RUN</code> 的话，镜像层数将非常多，构建时间和镜像大小都会受到影响。因此，一般使用一条 <code>RUN</code> 利用 <code>&amp;&amp; \</code> 连接多条命令，而不是使用多条 <code>RUN</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
+</code></pre></div>
+<p><strong>创建/编辑配置文件 <code>LeaderBoard/my.cnf</code>：</strong>配置文件一般包含敏感信息（如数据库的用户名与密码等），<strong>不能</strong>放入镜像中，因此这一步<strong>不能</strong>在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。</p>
+<p><strong>运行程序</strong>：运行 Django 程序包含几个步骤，这些步骤都在<strong>容器运行</strong>而不是容器构建时进行，因此应成为 <code>CMD</code>。一种较为简便的在启动时执行多条命令的方法为：将它们写到一个 shell 脚本中。在我们的例子中，我们将三个步骤写到 <code>start.sh</code> 中：</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/sh</span>
+python3 manage.py makemigrations <span class="o">&amp;&amp;</span>
+python3 manage.py migrate <span class="o">&amp;&amp;</span>
+uwsgi --ini uwsgi.ini
+</code></pre></div>
+<p>然后，使用 <code>CMD</code> 执行脚本：</p>
+<div class="highlight"><pre><span></span><code><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/bin/sh&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start.sh&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>这样，我们的 Docker 镜像就写好了。最终的 Dockerfile 见 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/external/django-backend/Dockerfile">/external/django-backend/Dockerfile</a>。</p>
+<p>构建镜像：</p>
+<div class="highlight"><pre><span></span><code>docker build . --tag leaderboard-backend
+</code></pre></div>
+<h2 id="_1">运行容器<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">关于此部分内容</p>
+<p>此部分内容介绍的方法稍显复杂，但对于理解 Docker 有较大的帮助。之后我们会使用 <a href="../docker-compose/">Docker Compose</a> 来简化这一流程。</p>
+</div>
+<h3 id="_2">运行数据库<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>在运行后端之前，我们首先使用 Docker 运行一个 MySQL 服务器。</p>
+<p>Docker 容器内的数据随着容器的销毁而消失，因此数据库的数据<strong>不能保存在容器内部</strong>。我们使用 Docker 的数据卷（Volume）功能。</p>
+<div class="admonition note">
+<p class="admonition-title">什么是数据卷</p>
+<p>数据卷是一个可供一个或多个容器使用的特殊目录，可以提供很多有用的特性，如：</p>
+<ul>
+<li>数据卷可以在容器之间共享和重用</li>
+<li>对数据卷的修改会立马生效</li>
+<li>对数据卷的更新，不会影响镜像</li>
+<li>数据卷默认会一直存在，即使容器被删除</li>
+</ul>
+</div>
+<p>首先，创建一个数据卷：</p>
+<div class="highlight"><pre><span></span><code>docker volume create db-vol
+</code></pre></div>
+<p>然后，启动 <code>mysql</code> 容器，并将此数据卷挂载到 <code>/var/lib/mysql</code>，即数据库数据文件存放的目录：</p>
+<div class="highlight"><pre><span></span><code>docker run <span class="se">\</span>
+    -d <span class="se">\</span>
+    --name db <span class="se">\</span>
+    --mount <span class="nv">source</span><span class="o">=</span>db-vol,target<span class="o">=</span>/var/lib/mysql <span class="se">\</span>
+    -e <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>my-secret-pw <span class="se">\</span>
+    mysql
+</code></pre></div>
+<p>其中，<code>my-secret-pw</code> 改为你想要设置的 <code>root</code> 账户的密码。</p>
+<p>接下来，进入 MySQL：</p>
+<div class="highlight"><pre><span></span><code>docker exec -it db mysql -p
+</code></pre></div>
+<p>然后，为后端创建一个数据库 <code>leaderboard</code>：</p>
+<div class="highlight"><pre><span></span><code>mysql&gt; CREATE DATABASE leaderboard;
+Query OK, 1 row affected (0.01 sec)
+</code></pre></div>
+<h3 id="_3">关于数据库的访问<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>每一个 Docker 容器都有自己的网络命名空间（Namespace），容器的网络是与其他容器/宿主机的网络隔离的，因此在数据库容器的 <code>0.0.0.0:3306</code> 上监听的 MySQL 服务是无法在后端容器中通过 <code>127.0.0.1:3306</code> 访问的。</p>
+<p><code>docker run</code> 创建容器时默认使用 Docker 的网桥模式（Bridge）创建网络，在这种模式下，除了分配隔离的网络命名空间之外，Docker 还会为所有的容器设置 IP 地址。当 Docker 服务器在主机上启动之后会创建新的虚拟网桥 <code>docker0</code>，随后在该主机上启动的全部服务在默认情况下都与该网桥相连。</p>
+<p>因此，一种简单的访问数据库容器的办法是通过它在 <code>bridge</code> 网络（Docker 为 bridge 模式的容器创建的默认网络）上的 IP 地址进行访问。我们通过如下命令查看 IP 地址的分配：</p>
+<div class="highlight"><pre><span></span><code>docker network inspect bridge
+</code></pre></div>
+<p>查看其中打印出的 JSON 的 <code>Containers</code> 查看所连接容器的网络信息，查找 <code>Name</code> 为 <code>db</code> 的一项：</p>
+<div class="highlight"><pre><span></span><code>...
+&quot;Containers&quot;: {
+    &quot;7dd1830526a7196c1d1751dcbbd38a756949306995062e33b12ebcb294f2d672&quot;: {
+        &quot;Name&quot;: &quot;db&quot;,
+        &quot;EndpointID&quot;: &quot;1c4ab5928e6ba0864c775637b55f200a8699b3700d8c9d6f346035ca12ff1eaf&quot;,
+        &quot;MacAddress&quot;: &quot;02:42:ac:11:00:03&quot;,
+        &quot;IPv4Address&quot;: &quot;172.17.0.3/16&quot;,
+        &quot;IPv6Address&quot;: &quot;&quot;
+    },
+    ...
+},
+...
+</code></pre></div>
+<p>其中的 <code>IPv4Address</code> 就是数据库容器被分配到的 IPv4 地址，在后端容器中通过 <code>172.17.0.3</code> 即可访问数据库。</p>
+<div class="admonition info">
+<p class="admonition-title">看不懂？</p>
+<p>这一部分看不懂没关系，只需要了解到通过 <code>docker network inspect bridge</code> 可以查询容器被分配到的、可以被其他容器访问到的 IP 地址就可以了。</p>
+</div>
+<h3 id="_4">运行后端<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>前面提到，数据库访问信息是不能放在镜像中的。我们通过挂载<strong>宿主机上</strong>的目录来解决。</p>
+<p>在宿主机上某个位置创建一个新目录作为存放配置文件的目录，在其中新建一个名为 <code>config.json</code> 的文件，并将数据库访问信息写入。注意修改 <code>db_host</code> 和 <code>db_pass</code> 为数据库容器的 IP 地址和数据库 <code>root</code> 账户的密码：</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;172.17.0.3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3306</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;root&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_pass&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-secret-pass&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;leaderboard&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db_charset&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;utf8mb4&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">真实环境下不要使用 root 账户</p>
+<p>数据库 root 账户具有一切权限，不应当用于后端访问。在这里我们为了方便直接使用 root 账户，真实情况下应当创建一个新的账户并授予相应的权限。</p>
+</div>
+<p>最后，运行后端容器：</p>
+<div class="highlight"><pre><span></span><code>docker run <span class="se">\</span>
+    -d
+    --name backend <span class="se">\</span>
+    -p <span class="m">9000</span>:80 <span class="se">\</span>
+    -v /abs_path/to/lb_config:/config <span class="se">\</span>
+    backend-django
+</code></pre></div>
+<p>注意 <code>/abs_path/to/lb_config</code> 需要改为之前创建的本机上的配置文件目录的<strong>绝对</strong>地址，<code>9000</code> 改为任意一个在本机上没有被占用的端口（一般 <code>9000</code> 就可以）。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>初次运行时可以不加 <code>-d</code>，方便检查运行是否有问题。</p>
+</div>
+<p>我们通过 <code>-v 本机配置文件目录绝对地址:/config</code> 来将本机上的配置文件目录映射到容器内的 <code>/config</code>，从而使得容器内可以通过 <code>/config/config.json</code> 访问到本机上的配置文件，这样就在不将配置文件放入镜像的情况下在容器中访问到配置文件。</p>
+<p><code>-p 9000:80</code> 选项的作用在<a href="../commands/#linux">前面</a>提到过，其作用是将容器的 80 端口发布到宿主机的 9000 端口，从而能够通过宿主机的 9000 端口访问容器的 80 端口。</p>
+<p>运行容器后，在宿主机上访问 <code>GET http://127.0.0.1:9000/</code>，如果正常返回响应即运行成功：</p>
+<div class="highlight"><pre><span></span><code>curl http://127.0.0.1:9000
+{&quot;code&quot;: 0, &quot;msg&quot;: &quot;hello&quot;}
+</code></pre></div>
+<hr />
+<p>因为涉及到两个容器的运行及访问以及目录和数据卷的挂载，以上方法较为繁琐。接下来，我们介绍使用 Docker Compose 简化这一流程的方法。</p>
 
               
             </article>
@@ -374,13 +675,13 @@
       
       
         
-        <a href="../behind-the-scene/" class="md-footer__link md-footer__link--next" aria-label="下一页: Docker 的原理" rel="next">
+        <a href="../docker-compose/" class="md-footer__link md-footer__link--next" aria-label="下一页: Docker Compose 的使用" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 下一页
               </span>
-              Docker 的原理
+              Docker Compose 的使用
             </div>
           </div>
           <div class="md-footer__button md-icon">
