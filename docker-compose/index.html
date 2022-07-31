@@ -61,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -282,9 +287,52 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Docker Compose 的使用
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Docker Compose 的使用
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    描述容器运行的配置
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行服务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    一些常用的命令
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -338,6 +386,35 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    描述容器运行的配置
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    运行服务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    一些常用的命令
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -356,7 +433,67 @@
 
   <h1>Docker Compose 的使用</h1>
 
+<p>我们在<a href="../dockerfile-2/">前一节</a>介绍了使用 Docker 同时运行数据库和后端的方法。如果你亲自尝试过一遍的话，你会发现这种方法是极其繁琐的。繁琐之处在于：</p>
+<ul>
+<li>涉及到不同 Docker 容器间网络的连接</li>
+<li>需要手动创建和挂载数据卷、挂载配置文件、设置环境变量等</li>
+<li><code>docker run</code> 命令较为复杂，不利于快速一键运行</li>
+</ul>
+<p>Docker compose 是一个可以解决这些问题的工具。官方对 Docker compose 的介绍是“一个定义并运行多容器应用的工具”，当然，对于单容器也有其方便之处。</p>
+<h2 id="_1">描述容器运行的配置<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Dockerfile 用来描述<strong>容器构建的方法</strong>，而 Docker compose 使用的 <code>docker-compose.yml</code> 配置文件用来描述<strong>容器运行的方法</strong>。Docker compose 实际上调用 Docker 服务提供的 API 来对容器进行管理。</p>
+<p><code>docker-compose.yml</code> 文件一般放置在项目的根目录。我们直接给出运行后端和数据库所用的 <a href="https://github.com/liang2kl/2022-summer-training-docker-tutorial/tree/main/external/django-backend/docker-compose.yml"><code>docker-compose.yml</code></a>：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">db-vol</span><span class="p">:</span><span class="w"></span>
 
+<span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">backend</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9000:80&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/config.json:/config/config.json&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysql:latest</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;db-vol:/var/lib/mysql&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">MYSQL_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-secret-pw&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">MYSQL_DATABASE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaderboard</span><span class="w"></span>
+</code></pre></div>
+<p><code>volumes</code> 用来创建数据卷，在这里我们提供一个名称为 <code>db-vol</code> 的<strong>空词典</strong>，表示用默认配置创建一个名为 <code>db-vol</code> 的数据卷。</p>
+<p>一个 Docker 容器为一个服务（Service），在 <code>services</code> 中定义。</p>
+<ul>
+<li>对于需要构建镜像的后端，我们用 <code>build</code> 指定 <code>docker build</code> 的上下文（即 Dockerfile 所在目录）；而对于不需要构建镜像的 MySQL 服务，我们用 <code>image</code> 指定所用的镜像。</li>
+<li><code>ports</code> 是发布的端口，与 <code>docker run</code> 命令中 <code>-p</code> 一致。</li>
+<li><code>volumes</code> 用于挂载数据卷或绑定宿主机上的目录。挂载数据卷用数据卷名称，而挂载宿主机目录时需要对应目录的绝对路径或用 <code>.</code> 开头的相对路径（一般用 <code>${PWD}</code> 表示工作目录，在这里我们的 <code>config.json</code> 直接放在项目根目录下）。与 <code>docker run -v</code> 不同，这时我们<strong>可以挂载单个文件</strong>了。</li>
+<li><code>environment</code> 用于设置容器的环境变量。因为我们不再手动进入 MySQL 容器来创建数据库，因此额外增加 <code>MYSQL_DATABASE</code> 环境变量来完成这件事。</li>
+</ul>
+<p>需要注意的是，我们的后端需要等待 MySQL 初始化完成之后才能够开始运行，否则将因连接不上数据库而运行失败。然而，Docker compose 中的服务的启动顺序是不确定的。尽管 Docker compose 提供了一些字段（如 <code>depends_on</code>）来控制容器启动的顺序，但只能控制一个容器在另一个容器启动完成（Started），而不是初始化结束（Ready）后启动另一个容器。这仍可能导致运行失败。</p>
+<p>一种简单粗暴但有效的方法是：如果后端因为数据库的问题运行失败，就重新启动，直到成功。我们在 <code>backend</code> 服务中添加一项 <code>restart: unless-stopped</code> 来实现这样的作用。这一项的意思是：不断重启，直到手动停止。一旦后端运行成功，它将一直运行直到我们手动停止，因此可以达到我们的目的。</p>
+<div class="admonition note">
+<p class="admonition-title">一些更加优雅的方法</p>
+<p>利用一些第三方的工具，可以实现不需要重启容器，保证在数据库初始化完成、可以接受请求时再启动服务。<a href="https://github.com/vishnubob/wait-for-it">wait-for-it</a> 是一个这样的工具。</p>
+</div>
+<h2 id="_2">运行服务<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>在运行之前，我们先修改一下我们的配置文件（放置在项目根目录）。在前面我们使用 <code>bridge</code> 网络连接两个服务，而 Docker compose 的一大好处在于它自动创建一个连接所有服务的网络，并且可以以<strong>服务名</strong>作为 hostname 访问，这样就不需要手动在配置文件中填入 IP 地址了。因此，我们将 <code>config.json</code> 的 <code>db_host</code> 改成 <code>mysql</code>。</p>
+<p>在 <code>docker-compose.yml</code> 所在目录下，执行</p>
+<div class="highlight"><pre><span></span><code>docker compose up -d
+</code></pre></div>
+<p>即可根据 <code>docker-compose.yml</code> 一键运行所有服务。同样地，访问 <code>127.0.0.1:9000</code>，检查是否运行成功。</p>
+<div class="admonition info">
+<p class="admonition-title">docker-compose 与 docker compose</p>
+<p><code>docker-compose</code> 是 Python 脚本，而 <code>docker compose</code> 是 Docker cli 的一个子命令。后者根据前者的 <code>v2</code> 版本开发，其功能基本一致，但因为其整合入 Docker cli 中，我们无需安装额外的 <code>docker-compose</code> 工具。可以认为二者基本上是等同的。</p>
+</div>
+<h2 id="_3">一些常用的命令<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>除了 <code>docker compose up</code> 外，还有一些常用的命令：</p>
+<ul>
+<li><code>docker compose down</code>：停止所有容器，删除由 <code>docker compose up</code> 创建的网络、数据卷、镜像等。</li>
+<li><code>docker compose logs &lt;服务名&gt;</code>：查看某一容器内的日志。</li>
+<li><code>docker compose exec &lt;服务名&gt; &lt;命令&gt;</code>：在某一容器中执行命令。</li>
+</ul>
 
               
             </article>

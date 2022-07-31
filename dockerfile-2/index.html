@@ -542,6 +542,10 @@ python3 manage.py makemigrations <span class="o">&amp;&amp;</span>
 python3 manage.py migrate <span class="o">&amp;&amp;</span>
 uwsgi --ini uwsgi.ini
 </code></pre></div>
+<p>使用 <code>EXPOSE</code> 以暴露容器的 80 端口：</p>
+<div class="highlight"><pre><span></span><code><span class="k">EXPOSE</span><span class="w"> </span><span class="s">80</span>
+</code></pre></div>
+<p>这一条命令并不是必须的，但推荐加上。<code>EXPOSE</code> 是对于容器开放端口的一种<strong>说明</strong>，可以使使用者了解容器需要发布的端口。注意，<code>EXPOSE</code> 不会将容器的端口发布到宿主机，这一步仍需要通过 <code>docker run</code> 的 <code>-p</code> 或 <code>-P</code> 进行。</p>
 <p>然后，使用 <code>CMD</code> 执行脚本：</p>
 <div class="highlight"><pre><span></span><code><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/bin/sh&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start.sh&quot;</span><span class="p">]</span>
 </code></pre></div>
@@ -578,7 +582,7 @@ uwsgi --ini uwsgi.ini
     -e <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>my-secret-pw <span class="se">\</span>
     mysql
 </code></pre></div>
-<p>其中，<code>my-secret-pw</code> 改为你想要设置的 <code>root</code> 账户的密码。</p>
+<p>其中，<code>-e</code> 的作用为设置环境变量，<code>my-secret-pw</code> 改为你想要设置的 <code>root</code> 账户的密码。</p>
 <p>接下来，进入 MySQL：</p>
 <div class="highlight"><pre><span></span><code>docker exec -it db mysql -p
 </code></pre></div>
@@ -609,7 +613,7 @@ Query OK, 1 row affected (0.01 sec)
 <p>其中的 <code>IPv4Address</code> 就是数据库容器被分配到的 IPv4 地址，在后端容器中通过 <code>172.17.0.3</code> 即可访问数据库。</p>
 <div class="admonition info">
 <p class="admonition-title">看不懂？</p>
-<p>这一部分看不懂没关系，只需要了解到通过 <code>docker network inspect bridge</code> 可以查询容器被分配到的、可以被其他容器访问到的 IP 地址就可以了。</p>
+<p>这一部分看不懂没关系，只需要了解到通过 <code>docker network inspect bridge</code> 可以查询容器被分配到的、可以被其他容器访问到的 IP 地址就可以了。我们将在<a href="../docker-compose/">下一节</a>介绍更加简单的方法。</p>
 </div>
 <h3 id="_4">运行后端<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>前面提到，数据库访问信息是不能放在镜像中的。我们通过挂载<strong>宿主机上</strong>的目录来解决。</p>
@@ -627,20 +631,23 @@ Query OK, 1 row affected (0.01 sec)
 <p class="admonition-title">真实环境下不要使用 root 账户</p>
 <p>数据库 root 账户具有一切权限，不应当用于后端访问。在这里我们为了方便直接使用 root 账户，真实情况下应当创建一个新的账户并授予相应的权限。</p>
 </div>
-<p>最后，运行后端容器：</p>
+<p>最后，运行后端容器，注意 <code>/abs_path/to/config/dir</code> 需要改为之前创建的本机上的配置文件目录的<strong>绝对</strong>地址，<code>9000</code> 改为任意一个在本机上没有被占用的端口（一般 <code>9000</code> 就可以）。</p>
 <div class="highlight"><pre><span></span><code>docker run <span class="se">\</span>
     -d
     --name backend <span class="se">\</span>
     -p <span class="m">9000</span>:80 <span class="se">\</span>
-    -v /abs_path/to/lb_config:/config <span class="se">\</span>
+    -v /abs_path/to/config/dir:/config <span class="se">\</span>
     backend-django
 </code></pre></div>
-<p>注意 <code>/abs_path/to/lb_config</code> 需要改为之前创建的本机上的配置文件目录的<strong>绝对</strong>地址，<code>9000</code> 改为任意一个在本机上没有被占用的端口（一般 <code>9000</code> 就可以）。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>初次运行时可以不加 <code>-d</code>，方便检查运行是否有问题。</p>
 </div>
 <p>我们通过 <code>-v 本机配置文件目录绝对地址:/config</code> 来将本机上的配置文件目录映射到容器内的 <code>/config</code>，从而使得容器内可以通过 <code>/config/config.json</code> 访问到本机上的配置文件，这样就在不将配置文件放入镜像的情况下在容器中访问到配置文件。</p>
+<div class="admonition note">
+<p class="admonition-title">映射目录而不是文件的原因</p>
+<p><code>docker run</code> 的 <code>-v</code> 一般情况下只能映射目录而不能映射单个文件，因此我们新建了一个放置配置文件的目录，并将其映射到容器内部。</p>
+</div>
 <p><code>-p 9000:80</code> 选项的作用在<a href="../commands/#linux">前面</a>提到过，其作用是将容器的 80 端口发布到宿主机的 9000 端口，从而能够通过宿主机的 9000 端口访问容器的 80 端口。</p>
 <p>运行容器后，在宿主机上访问 <code>GET http://127.0.0.1:9000/</code>，如果正常返回响应即运行成功：</p>
 <div class="highlight"><pre><span></span><code>curl http://127.0.0.1:9000
