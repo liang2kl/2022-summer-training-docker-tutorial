@@ -56,7 +56,11 @@ services:
 
 ## 运行服务
 
-在运行之前，我们先修改一下我们的配置文件（放置在项目根目录）。在前面我们使用 `bridge` 网络连接两个服务，而 Docker compose 的一大好处在于它自动创建一个连接所有服务的网络，并且可以以**服务名**作为 hostname 访问，这样就不需要手动在配置文件中填入 IP 地址了。因此，我们将 `config.json` 的 `db_host` 改成 `mysql`。
+在运行之前，我们先修改一下我们的配置文件（放置在项目根目录）。在前面我们使用 `bridge` 网络连接两个服务，而 Docker compose 的一大好处在于它自动创建一个连接所有服务的网络，并且可以以**服务名**作为 hostname 访问，这样就不需要手动在配置文件中填入 IP 地址了。因此，我们将 `config.json` 的 `db_host` 改成 `mysql`：
+
+```json
+"db_host": "mysql",
+```
 
 在 `docker-compose.yml` 所在目录下，执行
 
@@ -64,7 +68,9 @@ services:
 docker compose up -d
 ```
 
-即可根据 `docker-compose.yml` 一键运行所有服务。同样地，访问 `127.0.0.1:9000`，检查是否运行成功。
+即可根据 `docker-compose.yml` 一键运行所有服务。Docker compose 会自动完成数据卷和网络的创建、镜像的构建、容器的启动等工作。
+
+同样地，访问 `127.0.0.1:9000`，检查是否运行成功。
 
 !!! info "docker-compose 与 docker compose"
     `docker-compose` 是 Python 脚本，而 `docker compose` 是 Docker cli 的一个子命令。后者根据前者的 `v2` 版本开发，其功能基本一致，但因为其整合入 Docker cli 中，我们无需安装额外的 `docker-compose` 工具。可以认为二者基本上是等同的。
