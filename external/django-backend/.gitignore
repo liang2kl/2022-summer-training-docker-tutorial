@@ -1,4 +1,4 @@
-LeaderBoard/my.cnf
+config.json
 uwsgi.ini
 __pycache__
 .idea

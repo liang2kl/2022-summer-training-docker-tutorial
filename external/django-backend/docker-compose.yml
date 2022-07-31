@@ -1,0 +1,21 @@
+version: "3.9"
+
+volumes:
+  db-vol:
+
+services:
+  backend:
+    build: .
+    ports:
+      - "9000:80"
+    volumes:
+      - "${PWD}/config.json:/config/config.json"
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:latest
+    volumes:
+      - "db-vol:/var/lib/mysql"
+    environment:
+        MYSQL_ROOT_PASSWORD: "1234"
+        MYSQL_DATABASE: leaderboard

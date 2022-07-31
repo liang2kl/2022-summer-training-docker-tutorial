@@ -2,7 +2,16 @@
 title: 主页
 ---
 
-[本仓库](https://github.com/liang2kl/2022-summer-training-docker-tutorial/)包含 2022 年酒井科协暑培 Docker 课程文档及源码。本文档参考了汪子涵的 [2021 年暑培讲义](https://www.xuetangx.com/learn/THUSAST08091234567890/THUSAST08091234567890/8571842/video/13167567)，在此表示感谢。
+[本仓库](https://github.com/liang2kl/2022-summer-training-docker-tutorial/)包含 2022 年酒井科协暑培 Docker 课程文档及源码。
+
+本课程的内容包括：
+
+- [Docker 介绍](introduction.md)：介绍 Docker 的用处及有关概念
+- [Docker 基本命令](commands.md)：介绍 Docker 常用的命令，并给出一些运行 Docker 的例子
+- [Dockerfile 的编写（上）](dockerfile-1.md)：介绍通过 Dockerfile 构建 hello world 镜像的几种方法
+- [Dockerfile 的编写（下）](dockerfile-2.md)：打包并运行暑培后端作业
+- [Docker Compose 的使用](docker-compose.md)：介绍使用 Docker Compose 简化运行多个容器的步骤
+- [Docker 的原理](behind-the-scene.md)：简单介绍 Docker 背后的原理
 
 课前只需完成下面“课前准备”的内容。其余内容为课程讲义，在课上均会涉及。在完成课前准备的基础上，可以提前浏览 [Docker 介绍](introduction.md)的内容。
 
