@@ -478,11 +478,14 @@
 <p>利用一些第三方的工具，可以实现不需要重启容器，保证在数据库初始化完成、可以接受请求时再启动服务。<a href="https://github.com/vishnubob/wait-for-it">wait-for-it</a> 是一个这样的工具。</p>
 </div>
 <h2 id="_2">运行服务<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>在运行之前，我们先修改一下我们的配置文件（放置在项目根目录）。在前面我们使用 <code>bridge</code> 网络连接两个服务，而 Docker compose 的一大好处在于它自动创建一个连接所有服务的网络，并且可以以<strong>服务名</strong>作为 hostname 访问，这样就不需要手动在配置文件中填入 IP 地址了。因此，我们将 <code>config.json</code> 的 <code>db_host</code> 改成 <code>mysql</code>。</p>
+<p>在运行之前，我们先修改一下我们的配置文件（放置在项目根目录）。在前面我们使用 <code>bridge</code> 网络连接两个服务，而 Docker compose 的一大好处在于它自动创建一个连接所有服务的网络，并且可以以<strong>服务名</strong>作为 hostname 访问，这样就不需要手动在配置文件中填入 IP 地址了。因此，我们将 <code>config.json</code> 的 <code>db_host</code> 改成 <code>mysql</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;db_host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mysql&quot;</span><span class="p">,</span><span class="w"></span>
+</code></pre></div>
 <p>在 <code>docker-compose.yml</code> 所在目录下，执行</p>
 <div class="highlight"><pre><span></span><code>docker compose up -d
 </code></pre></div>
-<p>即可根据 <code>docker-compose.yml</code> 一键运行所有服务。同样地，访问 <code>127.0.0.1:9000</code>，检查是否运行成功。</p>
+<p>即可根据 <code>docker-compose.yml</code> 一键运行所有服务。Docker compose 会自动完成数据卷和网络的创建、镜像的构建、容器的启动等工作。</p>
+<p>同样地，访问 <code>127.0.0.1:9000</code>，检查是否运行成功。</p>
 <div class="admonition info">
 <p class="admonition-title">docker-compose 与 docker compose</p>
 <p><code>docker-compose</code> 是 Python 脚本，而 <code>docker compose</code> 是 Docker cli 的一个子命令。后者根据前者的 <code>v2</code> 版本开发，其功能基本一致，但因为其整合入 Docker cli 中，我们无需安装额外的 <code>docker-compose</code> 工具。可以认为二者基本上是等同的。</p>
