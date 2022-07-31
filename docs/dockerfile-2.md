@@ -85,6 +85,14 @@ python3 manage.py migrate &&
 uwsgi --ini uwsgi.ini
 ```
 
+使用 `EXPOSE` 以暴露容器的 80 端口：
+
+```dockerfile
+EXPOSE 80
+```
+
+这一条命令并不是必须的，但推荐加上。`EXPOSE` 是对于容器开放端口的一种**说明**，可以使使用者了解容器需要发布的端口。注意，`EXPOSE` 不会将容器的端口发布到宿主机，这一步仍需要通过 `docker run` 的 `-p` 或 `-P` 进行。
+
 然后，使用 `CMD` 执行脚本：
 
 ```dockerfile
@@ -135,7 +143,7 @@ docker run \
     mysql
 ```
 
-其中，`my-secret-pw` 改为你想要设置的 `root` 账户的密码。
+其中，`-e` 的作用为设置环境变量，`my-secret-pw` 改为你想要设置的 `root` 账户的密码。
 
 接下来，进入 MySQL：
 
@@ -182,7 +190,7 @@ docker network inspect bridge
 其中的 `IPv4Address` 就是数据库容器被分配到的 IPv4 地址，在后端容器中通过 `172.17.0.3` 即可访问数据库。
 
 !!! info "看不懂？"
-    这一部分看不懂没关系，只需要了解到通过 `docker network inspect bridge` 可以查询容器被分配到的、可以被其他容器访问到的 IP 地址就可以了。
+    这一部分看不懂没关系，只需要了解到通过 `docker network inspect bridge` 可以查询容器被分配到的、可以被其他容器访问到的 IP 地址就可以了。我们将在[下一节](docker-compose.md)介绍更加简单的方法。
 
 ### 运行后端
 
@@ -204,23 +212,24 @@ docker network inspect bridge
 !!! warning "真实环境下不要使用 root 账户"
     数据库 root 账户具有一切权限，不应当用于后端访问。在这里我们为了方便直接使用 root 账户，真实情况下应当创建一个新的账户并授予相应的权限。
 
-最后，运行后端容器：
+最后，运行后端容器，注意 `/abs_path/to/config/dir` 需要改为之前创建的本机上的配置文件目录的**绝对**地址，`9000` 改为任意一个在本机上没有被占用的端口（一般 `9000` 就可以）。
 
 ```bash
 docker run \
     -d
     --name backend \
     -p 9000:80 \
-    -v /abs_path/to/lb_config:/config \
+    -v /abs_path/to/config/dir:/config \
     backend-django
 ```
-
-注意 `/abs_path/to/lb_config` 需要改为之前创建的本机上的配置文件目录的**绝对**地址，`9000` 改为任意一个在本机上没有被占用的端口（一般 `9000` 就可以）。
 
 !!! note
     初次运行时可以不加 `-d`，方便检查运行是否有问题。
 
 我们通过 `-v 本机配置文件目录绝对地址:/config` 来将本机上的配置文件目录映射到容器内的 `/config`，从而使得容器内可以通过 `/config/config.json` 访问到本机上的配置文件，这样就在不将配置文件放入镜像的情况下在容器中访问到配置文件。
+
+!!! note "映射目录而不是文件的原因"
+    `docker run` 的 `-v` 一般情况下只能映射目录而不能映射单个文件，因此我们新建了一个放置配置文件的目录，并将其映射到容器内部。
 
 `-p 9000:80` 选项的作用在[前面](commands.md#linux)提到过，其作用是将容器的 80 端口发布到宿主机的 9000 端口，从而能够通过宿主机的 9000 端口访问容器的 80 端口。
 
