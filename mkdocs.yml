@@ -20,8 +20,9 @@ nav:
   - commands.md
   - dockerfile-1.md
   - dockerfile-2.md
-  - behind-the-scene.md
   - docker-compose.md
+  - behind-the-scene.md
+  - reference.md
 
 plugins:
   - search

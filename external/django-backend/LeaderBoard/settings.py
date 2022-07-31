@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import json
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -79,12 +80,18 @@ WSGI_APPLICATION = 'LeaderBoard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+with open(BASE_DIR / 'config' / 'config.json') as file:
+    config = json.load(file)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': 'my.cnf',
-        },
+        'HOST': config['db_host'],
+        'PORT': config['db_port'],
+        'NAME': config['db_name'],
+        'USER': config['db_user'],
+        'PASSWORD': config['db_pass'],
+        'CHARSET': config['db_charset'],
     }
 }
 

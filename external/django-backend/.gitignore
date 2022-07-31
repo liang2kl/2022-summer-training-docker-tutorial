@@ -1,0 +1,5 @@
+LeaderBoard/my.cnf
+uwsgi.ini
+__pycache__
+.idea
+migrations

@@ -1,3 +1,4 @@
 Django
 PyMySQL
 pytz
+cryptography
