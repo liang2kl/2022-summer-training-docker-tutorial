@@ -496,7 +496,7 @@
 <li>安装特定版本的 Python（在这里我们使用 3.8）</li>
 <li>安装项目依赖（<code>requirements.txt</code>）</li>
 <li>安装 uWSGI</li>
-<li>创建/编辑配置文件 <code>LeaderBoard/my.cnf</code></li>
+<li>创建/编辑配置文件 <code>config/config.json</code>（原来是 <code>LeaderBoard/my.cnf</code>）</li>
 </ol>
 </li>
 <li>运行程序<ol>
@@ -531,7 +531,7 @@
 <div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt <span class="o">&amp;&amp;</span> <span class="se">\</span>
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir uwsgi
 </code></pre></div>
-<p><strong>创建/编辑配置文件 <code>LeaderBoard/my.cnf</code>：</strong>配置文件一般包含敏感信息（如数据库的用户名与密码等），<strong>不能</strong>放入镜像中，因此这一步<strong>不能</strong>在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。</p>
+<p><strong>创建/编辑配置文件 <code>config/config.json</code>：</strong>配置文件一般包含敏感信息（如数据库的用户名与密码等），<strong>不能</strong>放入镜像中，因此这一步<strong>不能</strong>在构建镜像的过程中完成。我们稍后会介绍通过挂载目录完成此步骤的方法。</p>
 <p><strong>运行程序</strong>：运行 Django 程序包含几个步骤，这些步骤都在<strong>容器运行</strong>而不是容器构建时进行，因此应成为 <code>CMD</code>。一种较为简便的在启动时执行多条命令的方法为：将它们写到一个 shell 脚本中。在我们的例子中，我们将三个步骤写到 <code>start.sh</code> 中：</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/bin/sh</span>
 python3 manage.py makemigrations <span class="o">&amp;&amp;</span>
