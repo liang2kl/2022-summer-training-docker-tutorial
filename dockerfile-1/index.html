@@ -468,7 +468,7 @@
 <p>用 <code>FROM</code> 指定基础镜像：</p>
 <div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span>
 </code></pre></div>
-<p>最后，我们使用 <code>ENTRYPOINT</code> 来指定容器运行（即 <code>docker run</code>）时在<strong>容器内部</strong>执行的命令，命令行参数用逗号隔开：</p>
+<p>最后，我们使用 <code>CMD</code> 来指定容器运行（即 <code>docker run</code>）时在<strong>容器内部</strong>执行的命令，命令行参数用逗号隔开：</p>
 <div class="highlight"><pre><span></span><code><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">]</span>
 </code></pre></div>
 <p>这样，我们的 Dockerfile 就编写好了。接下来，在同一目录下使用 <code>docker build</code> 命令来构建镜像，并将镜像的标签设为 <code>hello:echo</code>：</p>
@@ -509,7 +509,7 @@
 <ul>
 <li>因为需要使用 <code>gcc</code>，因此使用官方的 <code>gcc</code> 镜像。</li>
 <li>因为编译在 <code>gcc</code> 镜像内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到镜像内部。使用 <code>COPY /local/path /container/path</code> 进行拷贝。</li>
-<li>在镜像中执行命令，使用 <code>RUN</code>。注意，<code>RUN</code> 在<strong>镜像构建</strong>时运行，而 <code>ENTRYPOINT</code> 在<strong>容器启动</strong>时运行。在这里，我们使用 <code>gcc</code> 编译程序，得到可执行文件 <code>hello-world</code>。</li>
+<li>在镜像中执行命令，使用 <code>RUN</code>。注意，<code>RUN</code> 在<strong>镜像构建</strong>时运行，而 <code>CMD</code> 在<strong>容器启动</strong>时运行。在这里，我们使用 <code>gcc</code> 编译程序，得到可执行文件 <code>hello-world</code>。</li>
 </ul>
 <p>与之前类似，构建镜像并运行容器：</p>
 <div class="highlight"><pre><span></span><code>docker build . --tag hello:basic
