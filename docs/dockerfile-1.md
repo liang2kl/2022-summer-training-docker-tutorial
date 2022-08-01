@@ -32,7 +32,7 @@ docker run --rm hello-world:latest
 FROM ubuntu:latest
 ```
 
-最后，我们使用 `ENTRYPOINT` 来指定容器运行（即 `docker run`）时在**容器内部**执行的命令，命令行参数用逗号隔开：
+最后，我们使用 `CMD` 来指定容器运行（即 `docker run`）时在**容器内部**执行的命令，命令行参数用逗号隔开：
 
 ```dockerfile
 CMD ["echo", "Hello, world!"]
@@ -90,7 +90,7 @@ CMD ["./hello-world"]
 
 - 因为需要使用 `gcc`，因此使用官方的 `gcc` 镜像。
 - 因为编译在 `gcc` 镜像内部进行，而我们的源文件在宿主机（即你的电脑）的文件系统中，我们需要将其拷贝到镜像内部。使用 `COPY /local/path /container/path` 进行拷贝。
-- 在镜像中执行命令，使用 `RUN`。注意，`RUN` 在**镜像构建**时运行，而 `ENTRYPOINT` 在**容器启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
+- 在镜像中执行命令，使用 `RUN`。注意，`RUN` 在**镜像构建**时运行，而 `CMD` 在**容器启动**时运行。在这里，我们使用 `gcc` 编译程序，得到可执行文件 `hello-world`。
 
 与之前类似，构建镜像并运行容器：
 
